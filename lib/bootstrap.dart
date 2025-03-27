@@ -6,11 +6,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:logging/logging.dart';
 
+import 'injection.dart';
+
 Future<void> bootstrap(FutureOr<Widget> Function() builder) async =>
     runZonedGuarded(() async => _initialize(builder), _handleError);
 
 void _initialize(FutureOr<Widget> Function() builder) async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
+  await configureDependencies();
   _initLogger();
   return runApp(await builder());
 }

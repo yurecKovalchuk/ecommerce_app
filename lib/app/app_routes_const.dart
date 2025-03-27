@@ -29,4 +29,8 @@ abstract class AppRoutInfo {
     name: 'wishlist_screen',
     path: '/wishlist',
   );
+  static const welcomeScreen = RouteData(
+    name: 'welcome_screen',
+    path: '/welcome',
+  );
 }

@@ -1,15 +1,18 @@
+import 'package:ecommerce_app/features/auth/welcome/screen/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../domain/domain.dart';
 import '../features/features.dart';
+import '../injection.dart';
 import 'app.dart';
 
 class ApplicationWidget extends StatelessWidget {
   ApplicationWidget({super.key});
 
   final GoRouter _router = GoRouter(
-    initialLocation: AppRoutInfo.homeScreen.path,
+    initialLocation: AppRoutInfo.welcomeScreen.path,
     debugLogDiagnostics: true,
     routes: [
       GoRoute(
@@ -24,7 +27,9 @@ class ApplicationWidget extends StatelessWidget {
         path: AppRoutInfo.loginScreen.path,
         name: AppRoutInfo.loginScreen.name,
         builder: (context, state) => BlocProvider(
-          create: (_) => LoginBloc(),
+          create: (_) => LoginBloc(
+            authRepository: getIt<AuthRepository>(),
+          ),
           child: const LoginScreen(),
         ),
       ),
@@ -51,6 +56,11 @@ class ApplicationWidget extends StatelessWidget {
           create: (_) => WishlistBloc(),
           child: const WishlistScreen(),
         ),
+      ),
+      GoRoute(
+        path: AppRoutInfo.welcomeScreen.path,
+        name: AppRoutInfo.welcomeScreen.name,
+        builder: (context, state) => WelcomeScreen(),
       ),
     ],
   );
