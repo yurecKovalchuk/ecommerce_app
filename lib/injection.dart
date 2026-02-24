@@ -10,7 +10,6 @@ final getIt = GetIt.instance;
 
 @injectableInit
 Future<void> configureDependencies() async {
-  await dotenv.load();
   getIt.init();
 }
 
@@ -18,6 +17,6 @@ Future<void> configureDependencies() async {
 abstract class RegisterModule {
   @lazySingleton
   Dio dio() => Dio(BaseOptions(
-        baseUrl: fakeStoreApiUrl ?? '',
+        baseUrl: apiUrl ?? '',
       ));
 }
