@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../app/app.dart';
+import 'package:ecommerce_app/app/app.dart';
 
 @injectable
 class AuthService {
-  final Dio _dio;
-
   AuthService(this._dio);
+
+  final Dio _dio;
 
   Future<Map<String, dynamic>> login({
     required String username,
@@ -15,7 +15,7 @@ class AuthService {
   }) async {
     try {
       final response = await _dio.post(
-        '$fakeStoreApiUrl/auth/login',
+        '$apiUrl/auth/login',
         data: {
           'username': username,
           'password': password,
@@ -28,11 +28,37 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> refreshToken(String token) async {
+    try {
+      final response = await _dio.post(
+        '$apiUrl/auth/refresh',
+        data: {'refreshToken': token},
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<Map<String, dynamic>> getProfile(String token) async {
+    try {
+      final response = await _dio.get(
+        '$apiUrl/auth/profile',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
   String _handleDioError(DioException e) {
     if (e.response != null) {
       return 'Error ${e.response?.statusCode}: ${e.response?.data}';
-    } else {
-      return 'Connection error: ${e.message}';
     }
+
+    return 'Connection error: ${e.message}';
   }
 }

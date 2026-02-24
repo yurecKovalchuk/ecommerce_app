@@ -1,17 +1,18 @@
 import 'package:injectable/injectable.dart';
 
-import '../../domain/domain.dart';
-import '../data.dart';
+import 'package:ecommerce_app/data/data.dart';
+import 'package:ecommerce_app/data/datasource/secure_storage_data_source.dart';
+import 'package:ecommerce_app/domain/domain.dart';
 
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl({
-    required this.sharedPrefDataSource,
+    required this.secureStorageDataSource,
     required this.authService,
   });
 
   final AuthService authService;
-  final SharedPrefDataSource sharedPrefDataSource;
+  final SecureStorageDataSource secureStorageDataSource;
 
   @override
   Future<void> login({
@@ -22,13 +23,35 @@ class AuthRepositoryImpl extends AuthRepository {
       username: username,
       password: password,
     );
-    print(result);
 
+    await _handleAuthResponse(result);
+  }
+
+  @override
+  Future<void> logout() => secureStorageDataSource.clearToken();
+
+  @override
+  Future<String?> getToken() => secureStorageDataSource.getToken();
+
+  @override
+  Future<UserModel?> getAuthenticatedUser() async {
+    final token = await getToken();
+    if (token == null) return null;
+
+    try {
+      final userData = await authService.getProfile(token);
+      return UserModel.fromJson(userData);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _handleAuthResponse(Map<String, dynamic> result) async {
     final token = result['token'] as String?;
     if (token == null) {
       throw Exception('No token received');
     }
 
-    await sharedPrefDataSource.saveToken(token);
+    await secureStorageDataSource.saveToken(token);
   }
 }

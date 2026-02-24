@@ -1,2 +1,3 @@
 export 'screen/home_screen.dart';
 export 'bloc/home_bloc.dart';
+export 'bloc/home_state.dart';

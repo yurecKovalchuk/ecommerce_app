@@ -3,20 +3,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @lazySingleton
 class SharedPrefDataSource {
-  static const _tokenKey = 'auth_token';
+  SharedPrefDataSource(this._prefs);
 
-  Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
+  final SharedPreferences _prefs;
+
+  static const _favoriteIdsKey = 'favorite_product_ids';
+
+  Future<void> saveFavoriteIds(List<int> ids) => _prefs.setStringList(
+    _favoriteIdsKey,
+    ids.map((id) => id.toString()).toList(),
+  );
+
+  Future<List<int>> getFavoriteIds() async {
+    final stringList = _prefs.getStringList(_favoriteIdsKey);
+    return stringList?.map(int.parse).toList() ?? [];
   }
 
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
-  }
-
-  Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-  }
+  Future<void> clearFavoriteIds() => _prefs.remove(_favoriteIdsKey);
 }
