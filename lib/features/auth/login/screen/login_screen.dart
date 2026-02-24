@@ -95,6 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigatorPushToHomeScreen(BuildContext context) {
-    context.pushNamed(AppRoutInfo.homeScreen.name);
+    context.go(AppRoutInfo.homeScreen.path);
   }
 }
